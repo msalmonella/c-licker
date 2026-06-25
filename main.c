@@ -7,44 +7,39 @@
 
 int main()
 {
-  int number;
-  printf("Enter CPS value: ");
-  scanf("%d", &number);
-  printf("Press F6 to toggle enable or disable.");
-  bool enabled = false;
-  bool change = false;
+	int number;
+	number = 0;
+	printf("Enter CPS value: ");
+	scanf("%d", &number);
+	printf("Press F6 to toggle enable or disable.");
+	bool enabled = false;
 
-  while (true)
-  {
-    while (!change)
-    {
-      if (GetAsyncKeyState(KEY_F7))
-      {
-        while (GetAsyncKeyState(KEY_F7))
-          ; // wait till F6 is released
-        enabled = !enabled;
-        if (enabled)
-        {
-          printf(":ON\n");
-        }
-        else
-        {
-          printf(":OFF\n");
-        }
-      }
+	while (true)
+	{
+		if (GetAsyncKeyState(KEY_F7) & 0x8000)
+		{
+			while (GetAsyncKeyState(KEY_F7) & 0x8000)
+				Sleep(10);
+			enabled = !enabled;
+			printf(enabled ? ":ON\n" : ":OFF\n");
+		}
 
-      if (enabled)
-      {
-        mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
-        mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
-        Sleep(1000 / number); // Control the click rate
-      }
-      if (GetAsyncKeyState(KEY_F4))
-      {
-        printf("Enter CPS value: ");
-        scanf("%d", &number);
-        printf("Press F6 to toggle enable or disable.");
-      }
-    }
-  }
+		if (GetAsyncKeyState(KEY_F4) & 0x8000)
+		{
+			printf("Enter CPS value: ");
+			scanf("%d", &number);
+			printf("Press F6 to toggle enable or disable.\n");
+		}
+
+		if (enabled && number > 0)
+		{
+			mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+			mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+			Sleep(1000 / number);
+		}
+		else
+		{
+			Sleep(15); // idle: yield the CPU instead of spinning
+		}
+	}
 }
